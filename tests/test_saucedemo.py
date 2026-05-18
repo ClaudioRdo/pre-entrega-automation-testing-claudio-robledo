@@ -72,3 +72,53 @@ def test_catalogo_productos(driver):
         "product_sort_container"
     )
     assert filtro.is_displayed()
+
+def test_agregar_al_carrito(driver):
+    login(
+        driver,
+        "standard_user",
+        "secret_sauce"
+    )
+    wait = WebDriverWait(
+        driver,
+        10
+    )
+
+    # Guardar nombre producto
+    nombre_producto = driver.find_element(
+        By.CLASS_NAME,
+        "inventory_item_name"
+    ).text
+
+    # Agregar producto
+    boton = wait.until(
+        EC.element_to_be_clickable(
+            (
+                By.XPATH,
+                "//button[contains(text(),'Add to cart')]"
+            )
+        )
+    )
+    boton.click()
+
+    # Verificar contador
+    badge = driver.find_element(
+        By.CLASS_NAME,
+        "shopping_cart_badge"
+    )
+    assert badge.text == "1"
+
+    # Ir carrito
+    driver.find_element(
+        By.CLASS_NAME,
+        "shopping_cart_link"
+    ).click()
+
+    # Validar producto
+    producto_carrito = driver.find_element(
+        By.CLASS_NAME,
+        "inventory_item_name"
+    ).text
+    assert (producto_carrito==nombre_producto
+    )
+
